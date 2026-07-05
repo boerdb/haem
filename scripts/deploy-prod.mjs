@@ -62,12 +62,18 @@ async function main() {
 
     if (hasDir.includes("yes")) {
       await exec(conn, `cd ${APP_DIR} && git pull origin main`, "Git pull");
-    } else {
+    } else if (
+      (await exec(conn, `test -d ${APP_DIR} && echo yes || echo no`, "Check app dir")).includes(
+        "yes",
+      )
+    ) {
       await exec(
         conn,
-        `mkdir -p /var/www && (test -d ${APP_DIR} || git clone ${REPO} ${APP_DIR}) && cd ${APP_DIR} && git pull origin main`,
-        "Git clone + pull",
+        `mv ${APP_DIR} ${APP_DIR}.bak.$(date +%Y%m%d%H%M%S) && git clone ${REPO} ${APP_DIR}`,
+        "Backup oude dir + git clone",
       );
+    } else {
+      await exec(conn, `mkdir -p /var/www && git clone ${REPO} ${APP_DIR}`, "Git clone");
     }
 
     const envContent = `NODE_ENV=production
