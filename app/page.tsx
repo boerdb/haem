@@ -10,6 +10,12 @@ import { ArrowRight, BookOpen } from "lucide-react";
 
 const MODULES = [
   {
+    href: "/heem-ijzer",
+    title: "Heem & ijzer",
+    desc: "Protoporfyrine, Fe²⁺, coordinatie en O₂-binding",
+    accent: "o2" as const,
+  },
+  {
     href: "/erytrocyt",
     title: "Hemoglobine in de erytrocyt",
     desc: "T/R-stand, 2,3-BPG, carbonic anhydrase",

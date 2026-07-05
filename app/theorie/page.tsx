@@ -12,6 +12,7 @@ import { getLiteratureRefs } from "@/lib/db/presets";
 
 const TOC = [
   { id: "kader", label: "Fysiologisch kader" },
+  { id: "heem-ijzer", label: "Heem & ijzer" },
   { id: "hemoglobine", label: "Hemoglobine & allosterie" },
   { id: "dissociatie", label: "Dissociatiecurve & Hill" },
   { id: "bohr", label: "Bohr-effect" },
@@ -37,7 +38,8 @@ export default async function TheoriePage() {
       <TheoryCallout>
         Deze pagina gaat dieper dan de illustraties. Drukwaarden in <strong>kPa</strong>{" "}
         (1 kPa ≈ 7,5 mmHg). Zie ook de{" "}
-        <TheoryLink href="/dissociatiecurve">interactieve dissociatiecurve</TheoryLink> en{" "}
+        <TheoryLink href="/dissociatiecurve">interactieve dissociatiecurve</TheoryLink>,{" "}
+        <TheoryLink href="/heem-ijzer">heem & ijzer</TheoryLink> en{" "}
         <TheoryLink href="/appendix">appendix</TheoryLink>.
       </TheoryCallout>
 
@@ -60,7 +62,80 @@ export default async function TheoriePage() {
             </p>
           </TheorySection>
 
-          <TheorySection id="hemoglobine" title="2. Hemoglobine & quaternaire allosterie">
+          <TheorySection id="heem-ijzer" title="2. Heem & ijzer — structuur en functie">
+            <p>
+              Het gasbindende centrum van hemoglobine is <strong>heem</strong>: een
+              protoporfyrine IX-ring (tetrapyrrol) met centraal gebonden{" "}
+              <strong>ijzer in ferrotoestand (Fe²⁺)</strong>. Zonder intact heem–ijzer
+              complex is hemoglobine een globine-eiwit zonder O₂-draagcapaciteit.
+            </p>
+
+            <h3 className="mt-4 text-base font-semibold text-slate-900">Protoporfyrine IX</h3>
+            <p>
+              De porfyrinering ontstaat in erytroïde voorlopers via δ-aminolevulinezuur
+              (ALA) → porfobilinogen → uroporfyrinogen → copro-/protoporfyrinogen →
+              protoporfyrine IX. Defecten in deze route veroorzaken porfyrie (aparte
+              klinische entiteit). Protoporfyrine IX is identiek in Hb, myoglobine,
+              cytochromen en catalase; het globine-eiwit bepaalt de fysiologische functie.
+            </p>
+
+            <h3 className="mt-4 text-base font-semibold text-slate-900">Ferrozuur (Fe²⁺) en oxidatiestatus</h3>
+            <p>
+              O₂ bindt reversibel aan Fe²⁺ in een zesde coordinatiepositie. Oxidatie tot
+              Fe³⁺ levert <strong>methemoglobine (metHb)</strong> op: het ion past niet
+              in de O₂-bindingsgeometrie; metHb is functioneel inert voor O₂-transport.
+              Fysiologisch is ~1–2% metHb aanwezig; cytochrome-b₅-reductase reduceert
+              metHb continu terug naar Fe²⁺.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Nitriet/nitraten, benzocaine, dapsone:</strong> metHb-vorming
+              </li>
+              <li>
+                <strong>G6PD-deficiëntie:</strong> verminderde reductiecapaciteit → metHb ↑
+              </li>
+              <li>
+                <strong>Hb M-varianten:</strong> mutaties stabiliseren Fe³⁺ (autosomal dominant)
+              </li>
+            </ul>
+
+            <h3 className="mt-4 text-base font-semibold text-slate-900">Histidine-coordinatie</h3>
+            <p>
+              De proximale histidine (His F8) bindt Fe²⁺ vanuit het eiwit en verankert
+              heem in de subunit. De distale histidine (His E7) vormt een waterstofbrug
+              met gebonden O₂, moduleert affiniteit en beschermt tegen snelle autoxidatie
+              (Fe²⁺ → Fe³⁺ + superoxide). Mutaties in E7 (bijv. Hb Kansas) veranderen
+              P₅₀ en coöperativiteit.
+            </p>
+
+            <h3 className="mt-4 text-base font-semibold text-slate-900">Capaciteit & liganden</h3>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>1 heem = maximaal 1 O₂; Hb-tetrameer (α₂β₂) = 4 O₂ per molecuul</li>
+              <li>
+                <strong>CO</strong> bindt ~200× sterker dan O₂ → carboxyhemoglobine;
+                sO₂ via pulse oximetrie kan normaal lijken (CO-Hb absorbeert rood licht)
+              </li>
+              <li>
+                <strong>NO</strong> bindt aan heem (endotheel NO-synthase → vasodilatatie;
+                Hb als NO-buffer in circulatie)
+              </li>
+            </ul>
+
+            <h3 className="mt-4 text-base font-semibold text-slate-900">Ijzerhuishouding & erytropoëse</h3>
+            <p>
+              IJzer wordt opgenomen via enterocytes (hepcidine-regulatie), vervoerd als
+              transferrine-Fe³⁺, opgenomen in erytroblasten via transferrinereceptor 1.
+              In mitochondria (ferrochelatase) wordt Fe²⁺ ingevoegd in protoporfyrine IX.
+              Volwassen erytrocyten synthetiseren geen heem meer: de ~280 miljoen Hb-moleculen
+              per cel zijn aangelegd vóór kernverlies. IJzer uit gespleten erytrocyten wordt
+              gerecycleerd via macrofagen (ferroportine → transferrine).
+            </p>
+            <p>
+              <TheoryLink href="/heem-ijzer">Interactieve module heem & ijzer →</TheoryLink>
+            </p>
+          </TheorySection>
+
+          <TheorySection id="hemoglobine" title="3. Hemoglobine & quaternaire allosterie">
             <p>
               Volwassen Hb is een tetrameer (α₂β₂). Elk subunit bevat een heemgroep met
               ferrozuur (Fe²⁺) dat reversibel O₂ bindt. In de <strong>T-stand</strong> (tense,
@@ -83,7 +158,7 @@ export default async function TheoriePage() {
             </p>
           </TheorySection>
 
-          <TheorySection id="dissociatie" title="3. Dissociatiecurve & Hill-vergelijking">
+          <TheorySection id="dissociatie" title="4. Dissociatiecurve & Hill-vergelijking">
             <p className="font-mono text-sm text-slate-800">
               sO₂ = (pO₂ⁿ / (P₅₀ⁿ + pO₂ⁿ)) × 100
             </p>
@@ -107,7 +182,7 @@ export default async function TheoriePage() {
             </p>
           </TheorySection>
 
-          <TheorySection id="bohr" title="4. Bohr-effect — molecuulair & klinisch">
+          <TheorySection id="bohr" title="5. Bohr-effect — molecuulair & klinisch">
             <p>
               In metabolisch actief weefsel stijgt pCO₂ → via CA meer H⁺ → pH daalt. H⁺ bindt
               aan histidine- en andere zure residuen, stabiliseert T-stand, verhoogt P₅₀.
@@ -127,7 +202,7 @@ export default async function TheoriePage() {
             </p>
           </TheorySection>
 
-          <TheorySection id="haldane" title="5. Haldane-effect — complement van Bohr">
+          <TheorySection id="haldane" title="6. Haldane-effect — complement van Bohr">
             <p>
               Deoxy-Hb bindt CO₂ preferent als <strong>carbaminohemoglobine</strong> (CO₂ aan
               N-termini van α- en β-ketens) én bindt H⁺ sterker dan oxy-Hb. Bij oxygenatie in
@@ -147,7 +222,7 @@ export default async function TheoriePage() {
             </p>
           </TheorySection>
 
-          <TheorySection id="co2" title="6. CO₂-transport — drie vormen">
+          <TheorySection id="co2" title="7. CO₂-transport — drie vormen">
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="border-b border-slate-300 text-left">
@@ -181,7 +256,7 @@ export default async function TheoriePage() {
             </p>
           </TheorySection>
 
-          <TheorySection id="cl-shift" title="7. Chloride shift (Hamburger-verschuiving)">
+          <TheorySection id="cl-shift" title="8. Chloride shift (Hamburger-verschuiving)">
             <p>
               Bij productie van HCO₃⁻ in de erytrocyt verlaat HCO₃⁻ de cel via het{" "}
               <strong>band 3</strong> anion-exchanger (AE1). Om electroneutraliteit te
@@ -196,7 +271,7 @@ export default async function TheoriePage() {
             </p>
           </TheorySection>
 
-          <TheorySection id="bpg" title="8. 2,3-Bisfofoglycerate (2,3-BPG)">
+          <TheorySection id="bpg" title="9. 2,3-Bisfofoglycerate (2,3-BPG)">
             <p>
               2,3-BPG bindt in de centrale cavity van deoxy-Hb tussen β-ketens. Hogere
               concentraties (chronische hypoxie, anemie, COPD, hoogte) verschuiven de curve
@@ -211,7 +286,7 @@ export default async function TheoriePage() {
             </p>
           </TheorySection>
 
-          <TheorySection id="integratie" title="9. Geïntegreerd model long ↔ weefsel">
+          <TheorySection id="integratie" title="10. Geïntegreerd model long ↔ weefsel">
             <p>
               <strong>Weefselcapilair:</strong> metabole CO₂ ↑ → pH ↓ → Bohr → O₂-afgifte ↑.
               CO₂ opgenomen als HCO₃⁻ + carbamino-Hb + opgelost. Venous bloed: lagere sO₂,
@@ -230,7 +305,7 @@ export default async function TheoriePage() {
             </p>
           </TheorySection>
 
-          <TheorySection id="kliniek" title="10. Klinische correlaties">
+          <TheorySection id="kliniek" title="11. Klinische correlaties">
             <ul className="list-disc space-y-2 pl-5">
               <li>
                 <strong>COPD / chronische hypercapnie:</strong> compensatoire alkalose
@@ -256,7 +331,7 @@ export default async function TheoriePage() {
             </ul>
           </TheorySection>
 
-          <TheorySection id="literatuur" title="11. Literatuur & verder lezen">
+          <TheorySection id="literatuur" title="12. Literatuur & verder lezen">
             <ul className="space-y-3">
               {refs.map((r) => (
                 <li key={r.citation_key}>

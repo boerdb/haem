@@ -14,6 +14,17 @@ export default function ErytrocytPage() {
         <ErythrocyteCrossSection />
       </div>
 
+      <InfoCard title="Heem & ijzer — het actieve centrum" accent="o2" className="mb-6">
+        <p>
+          Elke globine-subunit bevat één <strong>heemgroep</strong>: protoporfyrine IX met
+          centraal <strong>ferrozuur (Fe²⁺)</strong>. O₂ bindt aan Fe²⁺; oxidatie tot Fe³⁺
+          (methemoglobine) maakt O₂-binding onmogelijk.{" "}
+          <a href="/heem-ijzer" className="font-medium text-red-700 underline">
+            Uitgebreide module heem & ijzer →
+          </a>
+        </p>
+      </InfoCard>
+
       <div className="grid gap-4 lg:grid-cols-2">
         <InfoCard title="Quaternaire structuur (α₂β₂)" accent="o2">
           <p>

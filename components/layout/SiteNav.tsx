@@ -7,6 +7,7 @@ import { Droplets } from "lucide-react";
 
 const LINKS = [
   { href: "/", label: "Overzicht" },
+  { href: "/heem-ijzer", label: "Heem & ijzer" },
   { href: "/erytrocyt", label: "Erytrocyt" },
   { href: "/dissociatiecurve", label: "Dissociatiecurve" },
   { href: "/bohr-effect", label: "Bohr" },
