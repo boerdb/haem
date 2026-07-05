@@ -52,10 +52,12 @@ def main():
     sftp = c.open_sftp()
     remote = "/tmp/haemo_schema.sql"
     with sftp.file(remote, "w") as f:
-        f.write(SCHEMA)
+        f.write(SCHEMA.encode("utf-8"))
     sftp.close()
 
-    _, o, e = c.exec_command(f"mysql -u root -p{root_pw} < {remote}")
+    _, o, e = c.exec_command(
+        f"mysql -u root -p{root_pw} --default-character-set=utf8mb4 < {remote}"
+    )
     out = o.read().decode() + e.read().decode()
     if out.strip():
         print(out.strip())

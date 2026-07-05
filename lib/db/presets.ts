@@ -77,6 +77,10 @@ export async function getClinicalScenarios(): Promise<ClinicalScenario[]> {
   }
 }
 
+const STATIC_REF_BY_KEY = new Map(
+  STATIC_REFERENCES.map((r) => [r.citation_key, r]),
+);
+
 export async function getLiteratureRefs(): Promise<LiteratureRef[]> {
   if (!isDbEnabled()) return STATIC_REFERENCES;
   try {
@@ -85,14 +89,17 @@ export async function getLiteratureRefs(): Promise<LiteratureRef[]> {
       "SELECT id, citation_key, authors, title, year, url FROM references_lit ORDER BY year DESC",
     );
     if (!rows.length) return STATIC_REFERENCES;
-    return rows.map((r) => ({
-      id: r.id,
-      citation_key: r.citation_key,
-      authors: r.authors,
-      title: r.title,
-      year: r.year,
-      url: r.url,
-    }));
+    return rows.map((r) => {
+      const canonical = STATIC_REF_BY_KEY.get(String(r.citation_key));
+      return {
+        id: r.id,
+        citation_key: r.citation_key,
+        authors: canonical?.authors ?? r.authors,
+        title: canonical?.title ?? r.title,
+        year: r.year,
+        url: r.url ?? canonical?.url ?? null,
+      };
+    });
   } catch {
     return STATIC_REFERENCES;
   }
