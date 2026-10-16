@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Patch literatuurreferenties in haemo_db op .14 (UTF-8)."""
+import os
 from pathlib import Path
 import paramiko
 
@@ -25,14 +26,27 @@ def load_secrets():
     raise SystemExit("Maak scripts/.secrets.local aan (zie .secrets.local.example)")
 
 
-def main():
-    s = load_secrets()
-    host = s.get("DB_HOST", "192.168.1.14")
-    root_pw = s["MYSQL_ROOT_PASS"]
-
+def ssh_connect(s):
+    """Log in met de SSH-sleutel (SSH_KEY_PATH, standaard ~/.ssh/id_ed25519_homelab)."""
     c = paramiko.SSHClient()
     c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    c.connect(host, username=s.get("SSH_USER", "root"), password=s["SSH_PASS"], timeout=20)
+    c.connect(
+        s.get("DB_HOST", "192.168.1.14"),
+        username=s.get("SSH_USER", "root"),
+        key_filename=os.path.expanduser(s.get("SSH_KEY_PATH", "~/.ssh/id_ed25519_homelab")),
+        passphrase=s.get("SSH_KEY_PASSPHRASE") or None,
+        allow_agent=False,
+        look_for_keys=False,
+        timeout=20,
+    )
+    return c
+
+
+def main():
+    s = load_secrets()
+    root_pw = s["MYSQL_ROOT_PASS"]
+
+    c = ssh_connect(s)
 
     remote = "/tmp/haemo_patch_refs.sql"
     sftp = c.open_sftp()

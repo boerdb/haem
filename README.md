@@ -42,8 +42,11 @@ curl http://localhost:3016/api/health/redis
 ## Deploy (.32)
 
 ```bash
-DEPLOY_PASS=... DATABASE_URL=... node scripts/deploy-prod.mjs
+DATABASE_URL=... node scripts/deploy-prod.mjs
 ```
+
+SSH naar .14 en .32 gaat met de sleutel `~/.ssh/id_ed25519_homelab` (ander pad: `SSH_KEY_PATH`,
+wachtzin: `SSH_KEY_PASSPHRASE`). Zie [scripts/ssh.mjs](scripts/ssh.mjs).
 
 Cloudflare Tunnel: `haemo.clvs.nl` → `http://192.168.1.32:3016`
 

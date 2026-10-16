@@ -1,10 +1,5 @@
 import { Client } from "ssh2";
-
-const PASS = process.env.DEPLOY_PASS;
-if (!PASS) {
-  console.error("Zet DEPLOY_PASS (SSH-wachtwoord)");
-  process.exit(1);
-}
+import { sshOptions } from "./ssh.mjs";
 
 const c = new Client();
 c.on("ready", () => {
@@ -17,4 +12,4 @@ c.on("ready", () => {
     stream.on("data", (d) => process.stdout.write(d.toString()));
     stream.on("close", () => c.end());
   });
-}).connect({ host: "192.168.1.32", port: 22, username: "root", password: PASS });
+}).connect(sshOptions(process.env.DEPLOY_HOST || "192.168.1.32"));

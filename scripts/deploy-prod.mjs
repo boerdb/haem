@@ -1,13 +1,13 @@
 /**
  * Productie-deploy Haemo naar Next.js server (.32).
- * Gebruik: DEPLOY_PASS=... DATABASE_URL=... node scripts/deploy-prod.mjs
+ * Gebruik: DATABASE_URL=... node scripts/deploy-prod.mjs
+ * Inloggen met SSH-sleutel, zie scripts/ssh.mjs.
  */
 import { Client } from "ssh2";
-import { resolve } from "path";
+import { sshOptions } from "./ssh.mjs";
 
 const HOST = process.env.DEPLOY_HOST || "192.168.1.32";
 const USER = process.env.DEPLOY_USER || "root";
-const PASS = process.env.DEPLOY_PASS;
 const APP_DIR = "/var/www/haemo";
 const REPO = process.env.DEPLOY_REPO || "https://github.com/boerdb/haem.git";
 const PORT = process.env.APP_PORT || "3016";
@@ -15,8 +15,8 @@ const DATABASE_URL = process.env.DATABASE_URL;
 const REDIS_URL = process.env.REDIS_URL || "redis://192.168.1.14:6379";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://haemo.clvs.nl";
 
-if (!PASS || !DATABASE_URL) {
-  console.error("Zet DEPLOY_PASS (SSH-wachtwoord) en DATABASE_URL");
+if (!DATABASE_URL) {
+  console.error("Zet DATABASE_URL");
   process.exit(1);
 }
 
@@ -46,7 +46,7 @@ async function main() {
     conn
       .on("ready", resolvePromise)
       .on("error", reject)
-      .connect({ host: HOST, port: 22, username: USER, password: PASS });
+      .connect(sshOptions(HOST, USER));
   });
 
   try {

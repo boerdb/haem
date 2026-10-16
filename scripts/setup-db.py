@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Maak haemo_db + haemo_app user op .14 (zelfde patroon als dash-next-app)."""
+import os
 from pathlib import Path
 import paramiko
 
@@ -21,18 +22,30 @@ def load_secrets():
     raise SystemExit("Maak scripts/.secrets.local aan (zie .secrets.local.example)")
 
 
+def ssh_connect(s):
+    """Log in met de SSH-sleutel (SSH_KEY_PATH, standaard ~/.ssh/id_ed25519_homelab)."""
+    c = paramiko.SSHClient()
+    c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    c.connect(
+        s.get("DB_HOST", "192.168.1.14"),
+        username=s.get("SSH_USER", "root"),
+        key_filename=os.path.expanduser(s.get("SSH_KEY_PATH", "~/.ssh/id_ed25519_homelab")),
+        passphrase=s.get("SSH_KEY_PASSPHRASE") or None,
+        allow_agent=False,
+        look_for_keys=False,
+        timeout=20,
+    )
+    return c
+
+
 def main():
     s = load_secrets()
     host = s.get("DB_HOST", "192.168.1.14")
-    user = s.get("SSH_USER", "root")
-    pw = s["SSH_PASS"]
-    root_pw = s.get("MYSQL_ROOT_PASS", pw)
+    root_pw = s["MYSQL_ROOT_PASS"]
     app_pw = s["HAEMO_DB_PASS"]
 
-    c = paramiko.SSHClient()
-    c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     print(f"Verbinden met {host}...")
-    c.connect(host, username=user, password=pw, timeout=20)
+    c = ssh_connect(s)
 
     for h in HOSTS:
         sql = (
