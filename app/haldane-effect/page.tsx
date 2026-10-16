@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InfoCard } from "@/components/InfoCard";
 import { BloodGasPanel } from "@/components/BloodGasPanel";
@@ -5,6 +6,12 @@ import { LungAlveolusDiagram } from "@/components/illustrations/LungAlveolusDiag
 import { DissociationCurveChart } from "@/components/charts/DissociationCurveChart";
 import { getParameterPresets } from "@/lib/db/presets";
 import { ALVEOLAR } from "@/lib/physiology/co2Transport";
+
+export const metadata: Metadata = {
+  title: "Haldane-effect",
+  description:
+    "Deoxyhemoglobine bindt CO₂ (carbamino-vorm) en H⁺ beter dan oxyhemoglobine. Bij oxygenatie in de longen worden CO₂ en protonen vrijgegeven — complementair aan het Bohr-effect.",
+};
 
 export default async function HaldaneEffectPage() {
   const presets = await getParameterPresets();

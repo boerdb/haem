@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InfoCard } from "@/components/InfoCard";
 import { ErythrocyteCrossSection } from "@/components/illustrations/ErythrocyteCrossSection";
+
+export const metadata: Metadata = {
+  title: "Hemoglobine in de erytrocyt",
+  description:
+    "De erytrocyt is geoptimaliseerd voor gas transport: hemoglobine bindt O₂ coöperatief, carbonic anhydrase katalyseert CO₂-hydratatie, en 2,3-BPG moduleert de affiniteit.",
+};
 
 export default function ErytrocytPage() {
   return (

@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InfoCard } from "@/components/InfoCard";
 import { BloodGasPanel } from "@/components/BloodGasPanel";
 import { DissociationCurveChart } from "@/components/charts/DissociationCurveChart";
 import { getParameterPresets } from "@/lib/db/presets";
 import { NORMAL_VENOUS } from "@/lib/physiology/co2Transport";
+
+export const metadata: Metadata = {
+  title: "Bohr-effect",
+  description:
+    "In weefselcapilairen stijgt pCO₂ en daalt pH. Protonen binden aan histidine-residuen van hemoglobine → T-stand stabieler → P₅₀ stijgt → meer O₂-afgifte.",
+};
 
 export default async function BohrEffectPage() {
   const presets = await getParameterPresets();

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InfoCard } from "@/components/InfoCard";
 import { ClShiftDiagram } from "@/components/illustrations/ClShiftDiagram";
@@ -5,6 +6,12 @@ import {
   ARTERIAL_CO2_FRACTIONS,
   TISSUE_CO2_FRACTIONS,
 } from "@/lib/physiology/co2Transport";
+
+export const metadata: Metadata = {
+  title: "CO₂-transport in bloed",
+  description:
+    "Drie transportvormen: bicarbonaat (~70%), carbamino-hemoglobine (~23%) en opgelost CO₂ (~7%). De chloride shift maakt massale HCO₃⁻-export mogelijk.",
+};
 
 function FractionBar({
   label,

@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InfoCard } from "@/components/InfoCard";
 import { HemeIronDiagram } from "@/components/illustrations/HemeIronDiagram";
 import { ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Heem & ijzer",
+  description:
+    "De heemgroep is het actieve centrum van hemoglobine: protoporfyrine IX met ferrozuur (Fe²⁺) waar O₂ reversibel bindt. Zonder intact heem–ijzer geen gas transport.",
+};
 
 export default function HeemIjzerPage() {
   return (

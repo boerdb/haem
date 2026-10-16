@@ -20,7 +20,7 @@ npm run dev                    # http://localhost:3016
 | **192.168.1.32** | Next.js productie (PM2 `haemo`, poort 3016) |
 
 ```env
-DATABASE_URL=mysql://haemo_app:kerkpoort@192.168.1.14:3306/haemo_db
+DATABASE_URL=mysql://haemo_app:<wachtwoord>@192.168.1.14:3306/haemo_db
 REDIS_URL=redis://192.168.1.14:6379
 ```
 
@@ -42,7 +42,7 @@ curl http://localhost:3016/api/health/redis
 ## Deploy (.32)
 
 ```bash
-DEPLOY_PASS=... node scripts/deploy-prod.mjs
+DEPLOY_PASS=... DATABASE_URL=... node scripts/deploy-prod.mjs
 ```
 
 Cloudflare Tunnel: `haemo.clvs.nl` → `http://192.168.1.32:3016`

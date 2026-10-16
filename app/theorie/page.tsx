@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import {
@@ -9,6 +10,12 @@ import {
 import { BASE_P50, HILL_N } from "@/lib/physiology/hillEquation";
 import { formatKpaFromMmHg } from "@/lib/units";
 import { getLiteratureRefs } from "@/lib/db/presets";
+
+export const metadata: Metadata = {
+  title: "Theoretische achtergrond",
+  description:
+    "Uitgebreide fysiologische en moleculaire uitleg voor gespecialiseerde professionals — aanvulling op de interactieve modules.",
+};
 
 const TOC = [
   { id: "kader", label: "Fysiologisch kader" },

@@ -4,7 +4,6 @@ from pathlib import Path
 import paramiko
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-PASS = "kerkpoort"
 
 SQL = """\
 USE haemo_db;
@@ -24,17 +23,17 @@ def load_secrets():
                 k, v = line.split("=", 1)
                 s[k.strip()] = v.strip()
         return s
-    return {"DB_HOST": "192.168.1.14", "SSH_USER": "root", "SSH_PASS": PASS, "MYSQL_ROOT_PASS": PASS}
+    raise SystemExit("Maak scripts/.secrets.local aan (zie .secrets.local.example)")
 
 
 def main():
     s = load_secrets()
     host = s.get("DB_HOST", "192.168.1.14")
-    root_pw = s.get("MYSQL_ROOT_PASS", PASS)
+    root_pw = s["MYSQL_ROOT_PASS"]
 
     c = paramiko.SSHClient()
     c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    c.connect(host, username=s.get("SSH_USER", "root"), password=s.get("SSH_PASS", PASS), timeout=20)
+    c.connect(host, username=s.get("SSH_USER", "root"), password=s["SSH_PASS"], timeout=20)
 
     remote = "/tmp/haemo_patch_labels.sql"
     sftp = c.open_sftp()

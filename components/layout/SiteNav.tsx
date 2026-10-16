@@ -4,18 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Droplets } from "lucide-react";
+import { MODULES } from "@/lib/modules";
 
 const LINKS = [
   { href: "/", label: "Overzicht" },
-  { href: "/heem-ijzer", label: "Heem & ijzer" },
-  { href: "/erytrocyt", label: "Erytrocyt" },
-  { href: "/dissociatiecurve", label: "Dissociatiecurve" },
-  { href: "/bohr-effect", label: "Bohr" },
-  { href: "/haldane-effect", label: "Haldane" },
-  { href: "/co2-transport", label: "CO₂-transport" },
-  { href: "/longen", label: "Longen" },
-  { href: "/circulatie", label: "Circulatie" },
-  { href: "/theorie", label: "Theorie" },
+  ...MODULES.filter((m) => m.href !== "/appendix"),
 ];
 
 export function SiteNav() {

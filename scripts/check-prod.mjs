@@ -1,6 +1,10 @@
 import { Client } from "ssh2";
 
-const PASS = process.env.DEPLOY_PASS || "kerkpoort";
+const PASS = process.env.DEPLOY_PASS;
+if (!PASS) {
+  console.error("Zet DEPLOY_PASS (SSH-wachtwoord)");
+  process.exit(1);
+}
 
 const c = new Client();
 c.on("ready", () => {

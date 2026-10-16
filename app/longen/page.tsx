@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InfoCard } from "@/components/InfoCard";
 import { BloodGasPanel } from "@/components/BloodGasPanel";
 import { LungAlveolusDiagram } from "@/components/illustrations/LungAlveolusDiagram";
 import { ALVEOLAR, NORMAL_ARTERIAL } from "@/lib/physiology/co2Transport";
 import { formatKpaFromMmHg } from "@/lib/units";
+
+export const metadata: Metadata = {
+  title: "Gasuitwisseling in de longen",
+  description:
+    "In de alveolus-capilaire eenheid diffundeert O₂ naar het bloed en CO₂ naar de alveolus. Bohr- en Haldane-effect werken samen voor efficiënte gasuitwisseling.",
+};
 
 export default function LongenPage() {
   return (

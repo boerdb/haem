@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InfoCard } from "@/components/InfoCard";
 import { getLiteratureRefs } from "@/lib/db/presets";
 import { BASE_P50, HILL_N } from "@/lib/physiology/hillEquation";
 import { formatKpaFromMmHg } from "@/lib/units";
+
+export const metadata: Metadata = {
+  title: "Appendix — formules & literatuur",
+  description:
+    "Referentiewaarden, vergelijkingen en bronnen voor verdere lectuur.",
+};
 
 export default async function AppendixPage() {
   const refs = await getLiteratureRefs();

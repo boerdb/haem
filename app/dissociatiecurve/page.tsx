@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { DissociationCurveChart } from "@/components/charts/DissociationCurveChart";
 import { InfoCard } from "@/components/InfoCard";
 import { getParameterPresets } from "@/lib/db/presets";
 import { BASE_P50, HILL_N } from "@/lib/physiology/hillEquation";
 import { formatKpaFromMmHg } from "@/lib/units";
+
+export const metadata: Metadata = {
+  title: "Hb-O₂ dissociatiecurve",
+  description:
+    "Sigmoïde curve volgens de Hill-vergelijking. P₅₀, pH, pCO₂, temperatuur en 2,3-BPG bepalen de positie — het Bohr-effect in grafische vorm.",
+};
 
 export default async function DissociatiecurvePage() {
   const presets = await getParameterPresets();

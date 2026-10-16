@@ -7,57 +7,11 @@ import {
   NORMAL_VENOUS,
 } from "@/lib/physiology/co2Transport";
 import { ArrowRight, BookOpen } from "lucide-react";
+import { MODULES } from "@/lib/modules";
 
-const MODULES = [
-  {
-    href: "/heem-ijzer",
-    title: "Heem & ijzer",
-    desc: "Protoporfyrine, Fe²⁺, coordinatie en O₂-binding",
-    accent: "o2" as const,
-  },
-  {
-    href: "/erytrocyt",
-    title: "Hemoglobine in de erytrocyt",
-    desc: "T/R-stand, 2,3-BPG, carbonic anhydrase",
-    accent: "o2" as const,
-  },
-  {
-    href: "/dissociatiecurve",
-    title: "Dissociatiecurve",
-    desc: "Interactieve Hill-curve met Bohr-shift",
-    accent: "o2" as const,
-  },
-  {
-    href: "/bohr-effect",
-    title: "Bohr-effect",
-    desc: "CO₂/H⁺ verlagen O₂-affiniteit in weefsel",
-    accent: "co2" as const,
-  },
-  {
-    href: "/haldane-effect",
-    title: "Haldane-effect",
-    desc: "O₂-binden bevordert CO₂-afgifte in longen",
-    accent: "co2" as const,
-  },
-  {
-    href: "/co2-transport",
-    title: "CO₂-transport",
-    desc: "Bicarbonaat, carbamino-Hb, chloride shift",
-    accent: "co2" as const,
-  },
-  {
-    href: "/longen",
-    title: "Gasuitwisseling longen",
-    desc: "Alveolaire diffusie en capillaire perfusie",
-    accent: "o2" as const,
-  },
-  {
-    href: "/circulatie",
-    title: "Circulatie — scroll-verhaal",
-    desc: "Weefsel → transport → long → arterieel",
-    accent: "neutral" as const,
-  },
-];
+const INTERACTIVE = MODULES.filter(
+  (m) => m.href !== "/theorie" && m.href !== "/appendix",
+);
 
 export default function HomePage() {
   return (
@@ -106,7 +60,7 @@ export default function HomePage() {
         Interactieve modules
       </h2>
       <div className="grid gap-4 sm:grid-cols-2">
-        {MODULES.map((m) => (
+        {INTERACTIVE.map((m) => (
           <Link
             key={m.href}
             href={m.href}
