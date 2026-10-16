@@ -20,7 +20,7 @@ export default function LongenPage() {
         subtitle="In de alveolus-capilaire eenheid diffundeert O₂ naar het bloed en CO₂ naar de alveolus. Bohr- en Haldane-effect werken samen voor efficiënte gasuitwisseling."
       />
 
-      <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6">
+      <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-3 sm:p-6">
         <AlveolusAnimation />
       </div>
 

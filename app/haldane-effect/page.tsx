@@ -23,7 +23,7 @@ export default async function HaldaneEffectPage() {
         subtitle="Deoxyhemoglobine bindt CO₂ (carbamino-vorm) en H⁺ beter dan oxyhemoglobine. Bij oxygenatie in de longen worden CO₂ en protonen vrijgegeven — complementair aan het Bohr-effect."
       />
 
-      <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6">
+      <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-3 sm:p-6">
         <AlveolusAnimation />
       </div>
 

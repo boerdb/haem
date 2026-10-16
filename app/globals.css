@@ -157,3 +157,109 @@ body {
     opacity: 0;
   }
 }
+
+/* ── Hero: O₂ bindt coöperatief, Hb T → R → T (8 s lus) ──
+   Basisstijl = gebonden toestand, zodat reduced-motion een zinvol stilstaand beeld geeft. */
+.haemo-hero-cell {
+  fill: #ef4444;
+  animation: haemo-hero-cell 8s ease-in-out infinite;
+}
+
+@keyframes haemo-hero-cell {
+  0%,
+  12% {
+    fill: #7f1d1d;
+  }
+  32%,
+  70% {
+    fill: #ef4444;
+  }
+  90%,
+  100% {
+    fill: #7f1d1d;
+  }
+}
+
+.haemo-hero-o2 {
+  animation: haemo-hero-o2 8s ease-in-out infinite both;
+}
+
+@keyframes haemo-hero-o2 {
+  0% {
+    transform: translate(var(--dx), var(--dy));
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  20%,
+  70% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  88%,
+  100% {
+    transform: translate(var(--ex), var(--ey));
+    opacity: 0;
+  }
+}
+
+.haemo-hero-hb {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: haemo-hero-hb 8s ease-in-out infinite;
+}
+
+@keyframes haemo-hero-hb {
+  0%,
+  15%,
+  88%,
+  100% {
+    transform: scale(1);
+  }
+  32%,
+  70% {
+    transform: scale(1.07);
+  }
+}
+
+.haemo-hero-label-t {
+  opacity: 0;
+  animation: haemo-hero-label-t 8s ease-in-out infinite;
+}
+
+.haemo-hero-label-r {
+  animation: haemo-hero-label-r 8s ease-in-out infinite;
+}
+
+@keyframes haemo-hero-label-t {
+  0%,
+  18%,
+  86%,
+  100% {
+    opacity: 1;
+  }
+  26%,
+  76% {
+    opacity: 0;
+  }
+}
+
+@keyframes haemo-hero-label-r {
+  0%,
+  18%,
+  86%,
+  100% {
+    opacity: 0;
+  }
+  26%,
+  76% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .haemo-hero * {
+    animation: none !important;
+  }
+}

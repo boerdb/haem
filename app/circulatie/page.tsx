@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { ScrollNarrative } from "@/components/ScrollNarrative";
+import { CirculationStory } from "@/components/animations/CirculationStory";
 
 export const metadata: Metadata = {
   title: "Circulatie — van weefsel naar long",
   description:
-    "Scroll door de volledige cyclus: Bohr-effect in weefsel, CO₂-transport, Haldane-effect in longen, arterieel bloed.",
+    "Volg één erytrocyt door de hele kringloop. Scroll omlaag: de bloedgaswaarden veranderen mee terwijl de cel door weefsel, venen, longen en arteriën reist.",
 };
 
 export default function CirculatiePage() {
@@ -13,9 +13,9 @@ export default function CirculatiePage() {
     <>
       <PageHeader
         title="Circulatie — van weefsel naar long"
-        subtitle="Scroll door de volledige cyclus: Bohr-effect in weefsel, CO₂-transport, Haldane-effect in longen, arterieel bloed."
+        subtitle="Volg één erytrocyt door de hele kringloop. Scroll omlaag: de bloedgaswaarden veranderen mee terwijl de cel door weefsel, venen, longen en arteriën reist."
       />
-      <ScrollNarrative />
+      <CirculationStory />
     </>
   );
 }

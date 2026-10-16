@@ -37,7 +37,7 @@ const PARTICLES: Particle[] = [0, 1, 2].flatMap((i) => {
       id: `co2-${i}`,
       label: "CO₂",
       color: "#64748b",
-      r: 15,
+      r: 18,
       states: [
         { x: 250 + i * 50, y: 24, o: 1 },
         { x: 255 + i * 45, y: 120 + (i % 2) * 18, o: 1 },
@@ -50,7 +50,7 @@ const PARTICLES: Particle[] = [0, 1, 2].flatMap((i) => {
       id: `h-${i}`,
       label: "H⁺",
       color: "#dc2626",
-      r: 11,
+      r: 13,
       states: [
         hidden,
         hidden,
@@ -63,26 +63,26 @@ const PARTICLES: Particle[] = [0, 1, 2].flatMap((i) => {
       id: `hco3-${i}`,
       label: "HCO₃⁻",
       color: "#ea580c",
-      r: 19,
+      r: 23,
       states: [
         hidden,
         hidden,
-        { x: 235, y: 170 + i * 30, o: 1 },
-        { x: 170, y: 150 + i * 30, o: 1 },
-        { x: 50, y: 92 + i * 34, o: 1 },
+        { x: 232, y: 166 + i * 36, o: 1 },
+        { x: 172, y: 140 + i * 36, o: 1 },
+        { x: 52, y: 78 + i * 48, o: 1 },
       ],
     },
     {
       id: `cl-${i}`,
       label: "Cl⁻",
       color: "#059669",
-      r: 13,
+      r: 15,
       states: [
-        { x: 40, y: 220 + i * 30, o: 1 },
-        { x: 40, y: 220 + i * 30, o: 1 },
-        { x: 40, y: 220 + i * 30, o: 1 },
-        { x: 40, y: 220 + i * 30, o: 1 },
-        { x: 198, y: 205 + i * 26, o: 1 },
+        { x: 40, y: 226 + i * 34, o: 1 },
+        { x: 40, y: 226 + i * 34, o: 1 },
+        { x: 40, y: 226 + i * 34, o: 1 },
+        { x: 40, y: 226 + i * 34, o: 1 },
+        { x: 200, y: 200 + i * 32, o: 1 },
       ],
     },
   ];
@@ -103,17 +103,17 @@ export function ChlorideShiftAnimation() {
         aria-label={`Chloride shift, stap ${step + 1}: ${STEPS[step].title}`}
       >
         <rect width="560" height="320" rx="10" fill="#eff6ff" />
-        <text x="16" y="24" fontSize="12" fontWeight="600" fill="#1e40af">Plasma</text>
+        <text x="16" y="26" fontSize="16" fontWeight="600" fill="#1e40af">Plasma</text>
 
         {/* Erytrocyt */}
         <ellipse cx="300" cy="175" rx="188" ry="118" fill="#fee2e2" stroke="#b91c1c" strokeWidth="3" />
-        <text x="470" y="290" textAnchor="end" fontSize="12" fontWeight="600" fill="#7f1d1d">Erytrocyt</text>
+        <text x="470" y="296" textAnchor="end" fontSize="16" fontWeight="600" fill="#7f1d1d">Erytrocyt</text>
 
         {/* Band-3 transporter in het membraan */}
         <g transform={`translate(${BAND3.x} ${BAND3.y})`}>
           <rect x="-12" y="-34" width="24" height="68" rx="8" fill="#0d9488" />
           <rect x="-4" y="-34" width="8" height="68" fill="#ccfbf1" />
-          <text x="0" y="52" textAnchor="middle" fontSize="10" fontWeight="600" fill="#0f766e">band-3</text>
+          <text x="0" y="54" textAnchor="middle" fontSize="13" fontWeight="600" fill="#0f766e">band-3</text>
         </g>
 
         {/* Carbonic anhydrase */}
@@ -122,7 +122,7 @@ export function ChlorideShiftAnimation() {
           transition={{ duration: reduceMotion ? 0 : 0.4 }}
         >
           <rect x={CA.x - 30} y={CA.y - 15} width="60" height="30" rx="7" fill="#059669" />
-          <text x={CA.x} y={CA.y + 5} textAnchor="middle" fontSize="12" fontWeight="700" fill="white">CA</text>
+          <text x={CA.x} y={CA.y + 5} textAnchor="middle" fontSize="15" fontWeight="700" fill="white">CA</text>
         </motion.g>
 
         {/* Hemoglobine */}
@@ -130,8 +130,8 @@ export function ChlorideShiftAnimation() {
           animate={{ scale: step === 2 ? 1.1 : 1 }}
           transition={{ duration: reduceMotion ? 0 : 0.4 }}
         >
-          <circle cx={HB.x} cy={HB.y} r="30" fill="#1e3a8a" opacity="0.85" />
-          <text x={HB.x} y={HB.y + 4} textAnchor="middle" fontSize="11" fontWeight="600" fill="white">deoxy-Hb</text>
+          <circle cx={HB.x} cy={HB.y} r="36" fill="#1e3a8a" opacity="0.85" />
+          <text x={HB.x} y={HB.y + 4} textAnchor="middle" fontSize="13" fontWeight="600" fill="white">deoxy-Hb</text>
         </motion.g>
 
         {/* Deeltjes */}
@@ -151,7 +151,7 @@ export function ChlorideShiftAnimation() {
                 }}
               >
                 <circle r={p.r} fill={p.color} />
-                <text y="4" textAnchor="middle" fontSize="10" fontWeight="700" fill="white">
+                <text y="4.5" textAnchor="middle" fontSize="12" fontWeight="700" fill="white">
                   {p.label}
                 </text>
               </motion.g>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useMotionValueEvent, useReducedMotion, useSpring } from "framer-motion";
 import type { ParameterPreset } from "@/lib/types";
 import {
@@ -21,23 +21,42 @@ type Props = {
   initialPreset?: string;
 };
 
-// Grafiekgeometrie (SVG-eenheden)
-const W = 640;
-const H = 340;
-const M = { top: 16, right: 20, bottom: 44, left: 52 };
-const PW = W - M.left - M.right;
-const PH = H - M.top - M.bottom;
 const X_MAX_KPA = 14;
+
+// Grafiekgeometrie (SVG-eenheden). Smal formaat voor telefoons: minder breed,
+// dus de tekst wordt relatief groter weergegeven.
+function makeGeom(W: number, H: number) {
+  const M = { top: 16, right: 20, bottom: 48, left: 56 };
+  const PW = W - M.left - M.right;
+  const PH = H - M.top - M.bottom;
+  return {
+    W,
+    H,
+    M,
+    PW,
+    PH,
+    sx: (kpa: number) => M.left + (kpa / X_MAX_KPA) * PW,
+    sy: (s: number) => M.top + (1 - s / 100) * PH,
+  };
+}
+type Geom = ReturnType<typeof makeGeom>;
+const WIDE = makeGeom(640, 340);
+const NARROW = makeGeom(420, 360);
+
+const NARROW_QUERY = "(max-width: 639px)";
+function subscribeNarrow(onChange: () => void) {
+  const mq = window.matchMedia(NARROW_QUERY);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
 
 /** Typische pO₂ in weefselcapillair (gemengd veneus) en arterieel bloed */
 const VENOUS_KPA = 5.3;
 const ARTERIAL_KPA = 13.3;
 
-const sx = (kpa: number) => M.left + (kpa / X_MAX_KPA) * PW;
-const sy = (sat: number) => M.top + (1 - sat / 100) * PH;
 const sat = (kpa: number, p50MmHg: number) => fractionSaturation(kpaToMmHg(kpa), p50MmHg);
 
-function curvePath(p50MmHg: number): string {
+function curvePath({ sx, sy }: Geom, p50MmHg: number): string {
   let d = "";
   for (let i = 0; i <= 140; i++) {
     const kpa = (i / 140) * X_MAX_KPA;
@@ -61,6 +80,13 @@ export function DissociationCurveChart({
   const [hoverKpa, setHoverKpa] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const reduceMotion = useReducedMotion();
+  const narrow = useSyncExternalStore(
+    subscribeNarrow,
+    () => window.matchMedia(NARROW_QUERY).matches,
+    () => false,
+  );
+  const G = narrow ? NARROW : WIDE;
+  const { W, H, M, PW, PH, sx, sy } = G;
 
   const targetP50 = useMemo(
     () => adjustedP50({ pH, pCO2: kpaToMmHg(pCO2Kpa), temp, bpg }),
@@ -185,28 +211,28 @@ export function DissociationCurveChart({
           {[0, 20, 40, 60, 80, 100].map((s) => (
             <g key={`y${s}`}>
               <line x1={M.left} x2={W - M.right} y1={sy(s)} y2={sy(s)} stroke="#e2e8f0" strokeDasharray={s === 0 ? undefined : "3 3"} />
-              <text x={M.left - 8} y={sy(s) + 4} textAnchor="end" fontSize="12" fill="#64748b">{s}</text>
+              <text x={M.left - 8} y={sy(s) + 4} textAnchor="end" fontSize="14" fill="#64748b">{s}</text>
             </g>
           ))}
           {[0, 2, 4, 6, 8, 10, 12, 14].map((k) => (
             <g key={`x${k}`}>
               <line x1={sx(k)} x2={sx(k)} y1={M.top} y2={H - M.bottom} stroke="#f1f5f9" />
-              <text x={sx(k)} y={H - M.bottom + 18} textAnchor="middle" fontSize="12" fill="#64748b">{k}</text>
+              <text x={sx(k)} y={H - M.bottom + 18} textAnchor="middle" fontSize="14" fill="#64748b">{k}</text>
             </g>
           ))}
-          <text x={M.left + PW / 2} y={H - 6} textAnchor="middle" fontSize="13" fill="#334155">pO₂ (kPa)</text>
-          <text transform={`translate(14 ${M.top + PH / 2}) rotate(-90)`} textAnchor="middle" fontSize="13" fill="#334155">sO₂ (%)</text>
+          <text x={M.left + PW / 2} y={H - 6} textAnchor="middle" fontSize="15" fill="#334155">pO₂ (kPa)</text>
+          <text transform={`translate(14 ${M.top + PH / 2}) rotate(-90)`} textAnchor="middle" fontSize="15" fill="#334155">sO₂ (%)</text>
 
           {/* Weefsel- en longzone */}
           <rect x={sx(2.5)} y={M.top} width={sx(VENOUS_KPA + 0.8) - sx(2.5)} height={PH} fill="#fff7ed" opacity="0.8" />
-          <text x={sx(4.2)} y={H - M.bottom - 8} textAnchor="middle" fontSize="11" fill="#c2410c">weefsel</text>
+          <text x={sx(4.2)} y={H - M.bottom - 8} textAnchor="middle" fontSize="13" fill="#c2410c">weefsel</text>
           <rect x={sx(11.5)} y={M.top} width={sx(X_MAX_KPA) - sx(11.5)} height={PH} fill="#eff6ff" opacity="0.8" />
-          <text x={sx(12.75)} y={H - M.bottom - 8} textAnchor="middle" fontSize="11" fill="#1d4ed8">long</text>
+          <text x={sx(12.75)} y={H - M.bottom - 8} textAnchor="middle" fontSize="13" fill="#1d4ed8">long</text>
 
           {/* Normale curve als schaduw */}
-          <path d={curvePath(BASE_P50)} fill="none" stroke="#cbd5e1" strokeWidth="2" />
+          <path d={curvePath(G, BASE_P50)} fill="none" stroke="#cbd5e1" strokeWidth="2" />
           {compareP50 !== null && (
-            <path d={curvePath(compareP50)} fill="none" stroke="#64748b" strokeWidth="2" strokeDasharray="6 4" />
+            <path d={curvePath(G, compareP50)} fill="none" stroke="#64748b" strokeWidth="2" strokeDasharray="6 4" />
           )}
 
           {/* P₅₀-hulplijnen */}
@@ -216,31 +242,31 @@ export function DissociationCurveChart({
             stroke="#94a3b8"
             strokeDasharray="4 4"
           />
-          <text x={sx(p50Kpa) + 6} y={sy(0) - 6} fontSize="11" fill="#475569">P₅₀</text>
+          <text x={M.left + 6} y={sy(50) - 6} fontSize="13" fill="#475569">P₅₀</text>
 
           {/* O₂-extractie tussen long en weefsel */}
           <line x1={sx(VENOUS_KPA)} x2={sx(ARTERIAL_KPA)} y1={sy(satVen)} y2={sy(satVen)} stroke="#a855f7" strokeDasharray="2 3" />
           <line x1={sx(ARTERIAL_KPA)} x2={sx(ARTERIAL_KPA)} y1={sy(satVen)} y2={sy(satArt)} stroke="#a855f7" strokeWidth="2" />
-          <text x={sx(ARTERIAL_KPA) - 6} y={(sy(satVen) + sy(satArt)) / 2 + 4} textAnchor="end" fontSize="11" fontWeight="600" fill="#7e22ce">
+          <text x={sx(ARTERIAL_KPA) - 6} y={(sy(satVen) + sy(satArt)) / 2 + 4} textAnchor="end" fontSize="13" fontWeight="600" fill="#7e22ce">
             O₂-afgifte {fmt(satArt - satVen, 0)}%
           </text>
 
           {/* Huidige curve */}
-          <path d={curvePath(p50)} fill="none" stroke="#dc2626" strokeWidth="3" strokeLinecap="round" />
+          <path d={curvePath(G, p50)} fill="none" stroke="#dc2626" strokeWidth="3" strokeLinecap="round" />
 
           <circle cx={sx(p50Kpa)} cy={sy(50)} r="5" fill="#dc2626" stroke="white" strokeWidth="2" />
-          <Marker kpa={VENOUS_KPA} s={satVen} color="#ea580c" label="veneus" />
-          <Marker kpa={ARTERIAL_KPA} s={satArt} color="#2563eb" label="arterieel" above />
+          <Marker g={G} kpa={VENOUS_KPA} s={satVen} color="#ea580c" label="veneus" />
+          <Marker g={G} kpa={ARTERIAL_KPA} s={satArt} color="#2563eb" label="arterieel" above />
 
           {/* Hover-uitlezing */}
           {hoverKpa !== null && (
             <g pointerEvents="none">
               <line x1={sx(hoverKpa)} x2={sx(hoverKpa)} y1={M.top} y2={H - M.bottom} stroke="#0f172a" strokeOpacity="0.25" />
               <circle cx={sx(hoverKpa)} cy={sy(sat(hoverKpa, p50))} r="4" fill="#0f172a" />
-              <g transform={`translate(${Math.min(sx(hoverKpa) + 10, W - M.right - 118)} ${M.top + 28})`}>
-                <rect width="118" height="40" rx="6" fill="#0f172a" opacity="0.9" />
-                <text x="10" y="16" fontSize="11" fill="#cbd5e1">pO₂ {fmt(hoverKpa)} kPa</text>
-                <text x="10" y="32" fontSize="12" fontWeight="600" fill="white">sO₂ {fmt(sat(hoverKpa, p50))}%</text>
+              <g transform={`translate(${Math.min(sx(hoverKpa) + 10, W - M.right - 146)} ${M.top + 28})`}>
+                <rect width="146" height="48" rx="6" fill="#0f172a" opacity="0.9" />
+                <text x="10" y="19" fontSize="13" fill="#cbd5e1">pO₂ {fmt(hoverKpa)} kPa</text>
+                <text x="10" y="38" fontSize="14" fontWeight="600" fill="white">sO₂ {fmt(sat(hoverKpa, p50))}%</text>
               </g>
             </g>
           )}
@@ -258,12 +284,14 @@ export function DissociationCurveChart({
 }
 
 function Marker({
+  g: { sx, sy },
   kpa,
   s,
   color,
   label,
   above = false,
 }: {
+  g: Geom;
   kpa: number;
   s: number;
   color: string;
@@ -277,7 +305,7 @@ function Marker({
         x={sx(kpa) + (above ? -4 : 8)}
         y={sy(s) + (above ? -12 : 16)}
         textAnchor={above ? "end" : "start"}
-        fontSize="11"
+        fontSize="13"
         fontWeight="600"
         fill={color}
       >

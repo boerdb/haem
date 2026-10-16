@@ -60,7 +60,7 @@ export default function Co2TransportPage() {
         <FractionBar label="Weefsel / venous" fractions={TISSUE_CO2_FRACTIONS} />
       </div>
 
-      <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6">
+      <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-3 sm:p-6">
         <ChlorideShiftAnimation />
       </div>
 

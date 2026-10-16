@@ -66,14 +66,14 @@ export function AlveolusAnimation() {
           stroke="#3b82f6"
           strokeWidth="2"
         />
-        <text x="300" y="92" textAnchor="middle" fontSize="14" fontWeight="600" fill="#1d4ed8">Alveolus</text>
-        <text x="300" y="112" textAnchor="middle" fontSize="11" fill="#2563eb">
+        <text x="300" y="92" textAnchor="middle" fontSize="18" fontWeight="600" fill="#1d4ed8">Alveolus</text>
+        <text x="300" y="116" textAnchor="middle" fontSize="14" fill="#2563eb">
           pO₂ {kpa(ALV_O2)} kPa · pCO₂ {kpa(ALV_CO2)} kPa
         </text>
 
         {/* Membraan */}
         <line x1={CAP_X0} x2={CAP_X1} y1="180" y2="180" stroke="#94a3b8" strokeWidth="2" strokeDasharray="1 3" />
-        <text x={CAP_X1} y="174" textAnchor="end" fontSize="10" fill="#64748b">membraan ~0,5 µm</text>
+        <text className="max-sm:hidden" x={CAP_X1} y="174" textAnchor="end" fontSize="11" fill="#64748b">membraan ~0,5 µm</text>
 
         {/* Diffusie — alleen in het eerste deel, daarna is er geen gradiënt meer */}
         {O2_X.map((x, i) => (
@@ -114,21 +114,21 @@ export function AlveolusAnimation() {
             />
           ))}
         </g>
-        <text x={CAP_X1 - 12} y="268" textAnchor="end" fontSize="10" fill="#991b1b">bloedstroom →</text>
-        <text x={CAP_X0 + 8} y="268" fontSize="10" fill="#7f1d1d">veneus, deoxy-Hb</text>
+        <text x={CAP_X1 - 12} y="270" textAnchor="end" fontSize="13" fill="#991b1b">bloedstroom →</text>
+        <text className="max-sm:hidden" x={CAP_X0 + 8} y="270" fontSize="13" fill="#7f1d1d">veneus, deoxy-Hb</text>
 
         {/* Evenwichtspunt */}
         <line x1={EQ_X} x2={EQ_X} y1="140" y2={CHART.bottom} stroke="#0f172a" strokeOpacity="0.35" strokeDasharray="4 4" />
-        <text x={EQ_X + 6} y="150" fontSize="10" fontWeight="600" fill="#334155">evenwicht ≈ 0,25 s</text>
+        <text x={EQ_X + 6} y="150" fontSize="14" fontWeight="600" fill="#334155">evenwicht ≈ 0,25 s</text>
 
         {/* Profiel pO₂ / pCO₂ langs het capillair */}
         <line x1={CAP_X0} x2={CAP_X1} y1={CHART.bottom} y2={CHART.bottom} stroke="#cbd5e1" />
         <path d={profilePath(VEN_O2, ALV_O2)} fill="none" stroke="#2563eb" strokeWidth="2.5" />
         <path d={profilePath(VEN_CO2, ALV_CO2)} fill="none" stroke="#ea580c" strokeWidth="2.5" />
-        <text x={CAP_X1} y={cy(ALV_O2) - 6} textAnchor="end" fontSize="10" fontWeight="600" fill="#1d4ed8">pO₂ capillair</text>
-        <text x={CAP_X1} y={cy(ALV_CO2) - 6} textAnchor="end" fontSize="10" fontWeight="600" fill="#c2410c">pCO₂ capillair</text>
-        <text x={CAP_X0} y={CHART.bottom + 16} fontSize="10" fill="#64748b">0 s</text>
-        <text x={CAP_X1} y={CHART.bottom + 16} textAnchor="end" fontSize="10" fill="#64748b">0,75 s contacttijd</text>
+        <text x={CAP_X1} y={cy(ALV_O2) - 6} textAnchor="end" fontSize="14" fontWeight="600" fill="#1d4ed8">pO₂ capillair</text>
+        <text x={CAP_X1} y={cy(ALV_CO2) - 6} textAnchor="end" fontSize="14" fontWeight="600" fill="#c2410c">pCO₂ capillair</text>
+        <text x={CAP_X0} y={CHART.bottom + 18} fontSize="13" fill="#64748b">0 s</text>
+        <text x={CAP_X1} y={CHART.bottom + 18} textAnchor="end" fontSize="13" fill="#64748b">0,75 s contacttijd</text>
         <line
           className="haemo-anim haemo-sweep"
           x1={CAP_X0 - 20}
