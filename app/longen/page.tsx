@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InfoCard } from "@/components/InfoCard";
 import { BloodGasPanel } from "@/components/BloodGasPanel";
-import { LungAlveolusDiagram } from "@/components/illustrations/LungAlveolusDiagram";
+import { AlveolusAnimation } from "@/components/animations/AlveolusAnimation";
 import { ALVEOLAR, NORMAL_ARTERIAL } from "@/lib/physiology/co2Transport";
 import { formatKpaFromMmHg } from "@/lib/units";
 
@@ -21,7 +21,7 @@ export default function LongenPage() {
       />
 
       <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6">
-        <LungAlveolusDiagram />
+        <AlveolusAnimation />
       </div>
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2">

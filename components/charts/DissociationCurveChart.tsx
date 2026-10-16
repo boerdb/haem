@@ -1,36 +1,52 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useMotionValueEvent, useReducedMotion, useSpring } from "framer-motion";
+import type { ParameterPreset } from "@/lib/types";
 import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ReferenceLine,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import type { CurvePoint, ParameterPreset } from "@/lib/types";
+  adjustedP50,
+  BASE_P50,
+  fractionSaturation,
+} from "@/lib/physiology/hillEquation";
 import {
-  formatKpaFromMmHg,
   formatKpaValue,
   kpaToMmHg,
+  mmHgToKpa,
   PCO2_KPA_MAX,
   PCO2_KPA_MIN,
 } from "@/lib/units";
-
-type CurveData = {
-  points: CurvePoint[];
-  P50: number;
-  params: { pH: number; pCO2: number; temp: number; bpg: number };
-};
 
 type Props = {
   presets?: ParameterPreset[];
   initialPreset?: string;
 };
+
+// Grafiekgeometrie (SVG-eenheden)
+const W = 640;
+const H = 340;
+const M = { top: 16, right: 20, bottom: 44, left: 52 };
+const PW = W - M.left - M.right;
+const PH = H - M.top - M.bottom;
+const X_MAX_KPA = 14;
+
+/** Typische pO₂ in weefselcapillair (gemengd veneus) en arterieel bloed */
+const VENOUS_KPA = 5.3;
+const ARTERIAL_KPA = 13.3;
+
+const sx = (kpa: number) => M.left + (kpa / X_MAX_KPA) * PW;
+const sy = (sat: number) => M.top + (1 - sat / 100) * PH;
+const sat = (kpa: number, p50MmHg: number) => fractionSaturation(kpaToMmHg(kpa), p50MmHg);
+
+function curvePath(p50MmHg: number): string {
+  let d = "";
+  for (let i = 0; i <= 140; i++) {
+    const kpa = (i / 140) * X_MAX_KPA;
+    d += `${i === 0 ? "M" : "L"}${sx(kpa).toFixed(1)},${sy(sat(kpa, p50MmHg)).toFixed(1)}`;
+  }
+  return d;
+}
+
+const fmt = (n: number, d = 1) => n.toFixed(d).replace(".", ",");
 
 export function DissociationCurveChart({
   presets = [],
@@ -41,33 +57,24 @@ export function DissociationCurveChart({
   const [pCO2Kpa, setPCO2Kpa] = useState(formatKpaValue(preset?.pCO2 ?? 40, 2));
   const [temp, setTemp] = useState(preset?.temp_c ?? 37);
   const [bpg, setBpg] = useState(preset?.bpg_mmol ?? 4.5);
-  const [compare, setCompare] = useState<CurveData | null>(null);
-  const [curve, setCurve] = useState<CurveData | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [compareP50, setCompareP50] = useState<number | null>(null);
+  const [hoverKpa, setHoverKpa] = useState<number | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const reduceMotion = useReducedMotion();
 
-  const fetchCurve = useCallback(async (params: Record<string, number>) => {
-    const qs = new URLSearchParams(
-      Object.entries(params).map(([k, v]) => [k, String(v)]),
-    );
-    const res = await fetch(`/api/physiology/dissociation-curve?${qs}`);
-    return (await res.json()) as CurveData;
-  }, []);
+  const targetP50 = useMemo(
+    () => adjustedP50({ pH, pCO2: kpaToMmHg(pCO2Kpa), temp, bpg }),
+    [pH, pCO2Kpa, temp, bpg],
+  );
 
+  // P₅₀ veert naar de nieuwe waarde — de curve morpht mee.
+  const p50Spring = useSpring(targetP50, { stiffness: 140, damping: 22 });
+  const [p50, setP50] = useState(targetP50);
+  useMotionValueEvent(p50Spring, "change", setP50);
   useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    const pCO2 = kpaToMmHg(pCO2Kpa);
-    fetchCurve({ pH, pCO2, temp, bpg })
-      .then((data) => {
-        if (!cancelled) setCurve(data);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [pH, pCO2Kpa, temp, bpg, fetchCurve]);
+    if (reduceMotion) p50Spring.jump(targetP50);
+    else p50Spring.set(targetP50);
+  }, [targetP50, reduceMotion, p50Spring]);
 
   const applyPreset = (slug: string) => {
     const p = presets.find((x) => x.slug === slug);
@@ -78,12 +85,25 @@ export function DissociationCurveChart({
     setBpg(p.bpg_mmol);
   };
 
-  const chartData =
-    curve?.points.map((p, i) => ({
-      pO2Kpa: formatKpaValue(p.pO2, 2),
-      sO2: p.sO2,
-      compare: compare?.points[i]?.sO2,
-    })) ?? [];
+  const p50Kpa = mmHgToKpa(p50);
+  const shift = targetP50 - BASE_P50;
+  const shiftLabel =
+    Math.abs(shift) < 0.3
+      ? "normale positie"
+      : shift > 0
+        ? "rechtsverschuiving — lagere O₂-affiniteit"
+        : "linksverschuiving — hogere O₂-affiniteit";
+
+  const satArt = sat(ARTERIAL_KPA, p50);
+  const satVen = sat(VENOUS_KPA, p50);
+
+  const onPointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = ((e.clientX - rect.left) / rect.width) * W;
+    const kpa = ((x - M.left) / PW) * X_MAX_KPA;
+    setHoverKpa(kpa >= 0 && kpa <= X_MAX_KPA ? kpa : null);
+  };
 
   return (
     <div className="space-y-6">
@@ -118,80 +138,163 @@ export function DissociationCurveChart({
       </div>
 
       <div className="flex flex-wrap items-center gap-3 text-sm">
-        {curve && (
-          <span className="rounded-md bg-slate-100 px-2 py-1 font-mono">
-            P₅₀ = {formatKpaFromMmHg(curve.P50)}
-          </span>
-        )}
+        <span className="rounded-md bg-slate-100 px-2 py-1 font-mono">
+          P₅₀ = {fmt(p50Kpa, 2)} kPa
+        </span>
+        <span
+          className={
+            Math.abs(shift) < 0.3
+              ? "text-slate-500"
+              : shift > 0
+                ? "font-medium text-orange-700"
+                : "font-medium text-blue-700"
+          }
+        >
+          {shiftLabel}
+        </span>
+        <span className="flex-1" />
         <button
           type="button"
           className="rounded-md border border-slate-200 px-3 py-1 hover:bg-slate-50"
-          onClick={() => curve && setCompare(curve)}
+          onClick={() => setCompareP50(targetP50)}
         >
           Referentiecurve vastzetten
         </button>
-        {compare && (
+        {compareP50 !== null && (
           <button
             type="button"
             className="text-slate-500 underline"
-            onClick={() => setCompare(null)}
+            onClick={() => setCompareP50(null)}
           >
             Referentie wissen
           </button>
         )}
-        {loading && <span className="text-slate-400">Berekenen…</span>}
       </div>
 
-      <div className="h-80 w-full rounded-xl border border-slate-200 bg-white p-2">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis
-              dataKey="pO2Kpa"
-              label={{ value: "pO₂ (kPa)", position: "insideBottom", offset: -2 }}
-              tick={{ fontSize: 12 }}
-            />
-            <YAxis
-              domain={[0, 100]}
-              label={{ value: "sO₂ (%)", angle: -90, position: "insideLeft" }}
-              tick={{ fontSize: 12 }}
-            />
-            <Tooltip
-              formatter={(v) => [`${Number(v).toFixed(1)}%`, "sO₂"]}
-              labelFormatter={(l) => `pO₂ ${l} kPa`}
-            />
-            <Legend />
-            {curve && (
-              <ReferenceLine
-                x={formatKpaValue(curve.P50, 2)}
-                stroke="#94a3b8"
-                strokeDasharray="4 4"
-                label={{ value: "P₅₀", position: "top", fontSize: 11 }}
-              />
-            )}
-            <Line
-              type="monotone"
-              dataKey="sO2"
-              name="Huidige curve"
-              stroke="#dc2626"
-              strokeWidth={2.5}
-              dot={false}
-            />
-            {compare && (
-              <Line
-                type="monotone"
-                dataKey="compare"
-                name="Referentie"
-                stroke="#64748b"
-                strokeWidth={2}
-                strokeDasharray="6 4"
-                dot={false}
-              />
-            )}
-          </LineChart>
-        </ResponsiveContainer>
+      <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-4">
+        <svg
+          ref={svgRef}
+          viewBox={`0 0 ${W} ${H}`}
+          className="w-full touch-none select-none"
+          role="img"
+          aria-label={`Hb-O₂ dissociatiecurve, P₅₀ ${fmt(p50Kpa, 2)} kPa, ${shiftLabel}`}
+          onPointerMove={onPointerMove}
+          onPointerLeave={() => setHoverKpa(null)}
+        >
+          {/* Raster en assen */}
+          {[0, 20, 40, 60, 80, 100].map((s) => (
+            <g key={`y${s}`}>
+              <line x1={M.left} x2={W - M.right} y1={sy(s)} y2={sy(s)} stroke="#e2e8f0" strokeDasharray={s === 0 ? undefined : "3 3"} />
+              <text x={M.left - 8} y={sy(s) + 4} textAnchor="end" fontSize="12" fill="#64748b">{s}</text>
+            </g>
+          ))}
+          {[0, 2, 4, 6, 8, 10, 12, 14].map((k) => (
+            <g key={`x${k}`}>
+              <line x1={sx(k)} x2={sx(k)} y1={M.top} y2={H - M.bottom} stroke="#f1f5f9" />
+              <text x={sx(k)} y={H - M.bottom + 18} textAnchor="middle" fontSize="12" fill="#64748b">{k}</text>
+            </g>
+          ))}
+          <text x={M.left + PW / 2} y={H - 6} textAnchor="middle" fontSize="13" fill="#334155">pO₂ (kPa)</text>
+          <text transform={`translate(14 ${M.top + PH / 2}) rotate(-90)`} textAnchor="middle" fontSize="13" fill="#334155">sO₂ (%)</text>
+
+          {/* Weefsel- en longzone */}
+          <rect x={sx(2.5)} y={M.top} width={sx(VENOUS_KPA + 0.8) - sx(2.5)} height={PH} fill="#fff7ed" opacity="0.8" />
+          <text x={sx(4.2)} y={H - M.bottom - 8} textAnchor="middle" fontSize="11" fill="#c2410c">weefsel</text>
+          <rect x={sx(11.5)} y={M.top} width={sx(X_MAX_KPA) - sx(11.5)} height={PH} fill="#eff6ff" opacity="0.8" />
+          <text x={sx(12.75)} y={H - M.bottom - 8} textAnchor="middle" fontSize="11" fill="#1d4ed8">long</text>
+
+          {/* Normale curve als schaduw */}
+          <path d={curvePath(BASE_P50)} fill="none" stroke="#cbd5e1" strokeWidth="2" />
+          {compareP50 !== null && (
+            <path d={curvePath(compareP50)} fill="none" stroke="#64748b" strokeWidth="2" strokeDasharray="6 4" />
+          )}
+
+          {/* P₅₀-hulplijnen */}
+          <polyline
+            points={`${sx(0)},${sy(50)} ${sx(p50Kpa)},${sy(50)} ${sx(p50Kpa)},${sy(0)}`}
+            fill="none"
+            stroke="#94a3b8"
+            strokeDasharray="4 4"
+          />
+          <text x={sx(p50Kpa) + 6} y={sy(0) - 6} fontSize="11" fill="#475569">P₅₀</text>
+
+          {/* O₂-extractie tussen long en weefsel */}
+          <line x1={sx(VENOUS_KPA)} x2={sx(ARTERIAL_KPA)} y1={sy(satVen)} y2={sy(satVen)} stroke="#a855f7" strokeDasharray="2 3" />
+          <line x1={sx(ARTERIAL_KPA)} x2={sx(ARTERIAL_KPA)} y1={sy(satVen)} y2={sy(satArt)} stroke="#a855f7" strokeWidth="2" />
+          <text x={sx(ARTERIAL_KPA) - 6} y={(sy(satVen) + sy(satArt)) / 2 + 4} textAnchor="end" fontSize="11" fontWeight="600" fill="#7e22ce">
+            O₂-afgifte {fmt(satArt - satVen, 0)}%
+          </text>
+
+          {/* Huidige curve */}
+          <path d={curvePath(p50)} fill="none" stroke="#dc2626" strokeWidth="3" strokeLinecap="round" />
+
+          <circle cx={sx(p50Kpa)} cy={sy(50)} r="5" fill="#dc2626" stroke="white" strokeWidth="2" />
+          <Marker kpa={VENOUS_KPA} s={satVen} color="#ea580c" label="veneus" />
+          <Marker kpa={ARTERIAL_KPA} s={satArt} color="#2563eb" label="arterieel" above />
+
+          {/* Hover-uitlezing */}
+          {hoverKpa !== null && (
+            <g pointerEvents="none">
+              <line x1={sx(hoverKpa)} x2={sx(hoverKpa)} y1={M.top} y2={H - M.bottom} stroke="#0f172a" strokeOpacity="0.25" />
+              <circle cx={sx(hoverKpa)} cy={sy(sat(hoverKpa, p50))} r="4" fill="#0f172a" />
+              <g transform={`translate(${Math.min(sx(hoverKpa) + 10, W - M.right - 118)} ${M.top + 28})`}>
+                <rect width="118" height="40" rx="6" fill="#0f172a" opacity="0.9" />
+                <text x="10" y="16" fontSize="11" fill="#cbd5e1">pO₂ {fmt(hoverKpa)} kPa</text>
+                <text x="10" y="32" fontSize="12" fontWeight="600" fill="white">sO₂ {fmt(sat(hoverKpa, p50))}%</text>
+              </g>
+            </g>
+          )}
+        </svg>
+
+        <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 px-2 text-xs text-slate-600">
+          <Legend color="#dc2626" label="Huidige curve" />
+          <Legend color="#cbd5e1" label="Normaal (pH 7,40 · 37 °C)" />
+          {compareP50 !== null && <Legend color="#64748b" label="Referentie" dashed />}
+          <Legend color="#a855f7" label="O₂-afgifte long → weefsel" />
+        </div>
       </div>
     </div>
+  );
+}
+
+function Marker({
+  kpa,
+  s,
+  color,
+  label,
+  above = false,
+}: {
+  kpa: number;
+  s: number;
+  color: string;
+  label: string;
+  above?: boolean;
+}) {
+  return (
+    <g>
+      <circle cx={sx(kpa)} cy={sy(s)} r="5.5" fill={color} stroke="white" strokeWidth="2" />
+      <text
+        x={sx(kpa) + (above ? -4 : 8)}
+        y={sy(s) + (above ? -12 : 16)}
+        textAnchor={above ? "end" : "start"}
+        fontSize="11"
+        fontWeight="600"
+        fill={color}
+      >
+        {label} {fmt(s, 0)}%
+      </text>
+    </g>
+  );
+}
+
+function Legend({ color, label, dashed }: { color: string; label: string; dashed?: boolean }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <svg width="18" height="6" aria-hidden>
+        <line x1="0" x2="18" y1="3" y2="3" stroke={color} strokeWidth="3" strokeDasharray={dashed ? "4 3" : undefined} />
+      </svg>
+      {label}
+    </span>
   );
 }
 

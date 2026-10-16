@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InfoCard } from "@/components/InfoCard";
 import { BloodGasPanel } from "@/components/BloodGasPanel";
-import { LungAlveolusDiagram } from "@/components/illustrations/LungAlveolusDiagram";
+import { AlveolusAnimation } from "@/components/animations/AlveolusAnimation";
 import { DissociationCurveChart } from "@/components/charts/DissociationCurveChart";
 import { getParameterPresets } from "@/lib/db/presets";
 import { ALVEOLAR } from "@/lib/physiology/co2Transport";
@@ -24,7 +24,7 @@ export default async function HaldaneEffectPage() {
       />
 
       <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6">
-        <LungAlveolusDiagram />
+        <AlveolusAnimation />
       </div>
 
       <BloodGasPanel values={ALVEOLAR} variant="alveolar" />

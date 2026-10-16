@@ -63,3 +63,97 @@ body {
 .prose-theory h3 {
   color: #0f172a;
 }
+
+/* ── Animaties (pauzeerbaar via data-paused op .haemo-anim-root) ── */
+.haemo-anim-root[data-paused="true"] .haemo-anim {
+  animation-play-state: paused;
+}
+
+.haemo-breathe {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: haemo-breathe 4s ease-in-out infinite;
+}
+
+@keyframes haemo-breathe {
+  50% {
+    transform: scale(1.04, 1.07);
+  }
+}
+
+/* Erytrocyt: 20 → 600 in user units; donker tot instroom, helderrood bij evenwicht (≈34%) */
+.haemo-rbc {
+  animation-name: haemo-rbc;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes haemo-rbc {
+  0% {
+    transform: translateX(0);
+    fill: #7f1d1d;
+  }
+  4% {
+    fill: #7f1d1d;
+  }
+  34% {
+    fill: #ef4444;
+  }
+  100% {
+    transform: translateX(580px);
+    fill: #ef4444;
+  }
+}
+
+.haemo-sweep {
+  animation-name: haemo-sweep;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes haemo-sweep {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(580px);
+  }
+}
+
+.haemo-o2-drop {
+  animation: haemo-o2-drop 1.85s ease-in infinite;
+}
+
+@keyframes haemo-o2-drop {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  20%,
+  75% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(55px);
+    opacity: 0;
+  }
+}
+
+.haemo-co2-rise {
+  animation: haemo-co2-rise 1.85s ease-in infinite;
+}
+
+@keyframes haemo-co2-rise {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  20%,
+  75% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-55px);
+    opacity: 0;
+  }
+}

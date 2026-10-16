@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InfoCard } from "@/components/InfoCard";
-import { ClShiftDiagram } from "@/components/illustrations/ClShiftDiagram";
+import { ChlorideShiftAnimation } from "@/components/animations/ChlorideShiftAnimation";
 import {
   ARTERIAL_CO2_FRACTIONS,
   TISSUE_CO2_FRACTIONS,
@@ -61,7 +61,7 @@ export default function Co2TransportPage() {
       </div>
 
       <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6">
-        <ClShiftDiagram />
+        <ChlorideShiftAnimation />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">

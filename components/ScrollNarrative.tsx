@@ -8,8 +8,8 @@ import {
   NORMAL_ARTERIAL,
   NORMAL_VENOUS,
 } from "@/lib/physiology/co2Transport";
-import { ClShiftDiagram } from "@/components/illustrations/ClShiftDiagram";
-import { LungAlveolusDiagram } from "@/components/illustrations/LungAlveolusDiagram";
+import { ChlorideShiftAnimation } from "@/components/animations/ChlorideShiftAnimation";
+import { AlveolusAnimation } from "@/components/animations/AlveolusAnimation";
 
 const STEPS = [
   {
@@ -71,12 +71,12 @@ export function ScrollNarrative() {
           )}
           {step.id === "transport" && (
             <div className="mt-6">
-              <ClShiftDiagram />
+              <ChlorideShiftAnimation />
             </div>
           )}
           {step.id === "long" && (
             <div className="mt-6 space-y-4">
-              <LungAlveolusDiagram />
+              <AlveolusAnimation />
               <BloodGasPanel values={ALVEOLAR} variant="alveolar" />
             </div>
           )}
