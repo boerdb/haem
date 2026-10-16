@@ -44,6 +44,11 @@ export type LiteratureRef = {
   citation_key: string;
   authors: string;
   title: string;
+  /** Tijdschrift met jaargang en pagina's, of uitgever bij boeken */
+  journal: string | null;
   year: number;
+  doi: string | null;
+  pmid: string | null;
+  /** PubMed-link indien beschikbaar, anders DOI-link */
   url: string | null;
 };

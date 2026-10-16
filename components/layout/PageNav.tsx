@@ -17,7 +17,7 @@ export function PageNav() {
   return (
     <nav
       aria-label="Leerroute"
-      className="mt-16 border-t border-slate-200 pt-8"
+      className="mt-16 border-t border-slate-200 pt-8 print:hidden"
     >
       <p className="mb-4 text-xs font-medium uppercase tracking-wider text-slate-500">
         Module {index + 1} van {MODULES.length}

@@ -2,34 +2,8 @@ import "server-only";
 import type mysql from "mysql2/promise";
 import { getPool, isDbEnabled } from "@/lib/db/pool";
 import { STATIC_PRESETS } from "@/lib/presets";
+import { STATIC_REFERENCES } from "@/lib/literature";
 import type { ClinicalScenario, LiteratureRef, ParameterPreset } from "@/lib/types";
-
-export const STATIC_REFERENCES: LiteratureRef[] = [
-  {
-    id: 1,
-    citation_key: "west-2020",
-    authors: "West J.B.",
-    title: "Respiratory Physiology — The Essentials",
-    year: 2020,
-    url: null,
-  },
-  {
-    id: 2,
-    citation_key: "geers-1994",
-    authors: "Geers C., Gross G.",
-    title: "Carbon dioxide transport and carbonic anhydrase in blood and muscle",
-    year: 1994,
-    url: "https://pubmed.ncbi.nlm.nih.gov/7933611/",
-  },
-  {
-    id: 3,
-    citation_key: "dash-2004",
-    authors: "Dash R.K., Bassingthwaighte J.B.",
-    title: "Blood HbO₂ and HbCO₂ dissociation curves at varied O₂, CO₂, pH, 2,3-DPG and temperature",
-    year: 2004,
-    url: null,
-  },
-];
 
 export async function getParameterPresets(): Promise<ParameterPreset[]> {
   if (!isDbEnabled()) return STATIC_PRESETS;
@@ -81,25 +55,29 @@ const STATIC_REF_BY_KEY = new Map(
   STATIC_REFERENCES.map((r) => [r.citation_key, r]),
 );
 
+/** Literatuur uit de database; de canonieke lijst in lib/literature.ts wint bij bekende sleutels. */
 export async function getLiteratureRefs(): Promise<LiteratureRef[]> {
   if (!isDbEnabled()) return STATIC_REFERENCES;
   try {
     const pool = getPool();
-    const [rows] = await pool.query<mysql.RowDataPacket[]>(
-      "SELECT id, citation_key, authors, title, year, url FROM references_lit ORDER BY year DESC",
-    );
-    if (!rows.length) return STATIC_REFERENCES;
-    return rows.map((r) => {
-      const canonical = STATIC_REF_BY_KEY.get(String(r.citation_key));
-      return {
+    const [rows] = await pool.query<mysql.RowDataPacket[]>("SELECT * FROM references_lit");
+    const byKey = new Map(STATIC_REFERENCES.map((r) => [r.citation_key, r]));
+    for (const r of rows) {
+      const key = String(r.citation_key);
+      if (STATIC_REF_BY_KEY.has(key)) continue;
+      byKey.set(key, {
         id: r.id,
-        citation_key: r.citation_key,
-        authors: canonical?.authors ?? r.authors,
-        title: canonical?.title ?? r.title,
+        citation_key: key,
+        authors: r.authors,
+        title: r.title,
+        journal: r.journal ?? null,
         year: r.year,
-        url: r.url ?? canonical?.url ?? null,
-      };
-    });
+        doi: r.doi ?? null,
+        pmid: r.pmid ?? null,
+        url: r.url ?? null,
+      });
+    }
+    return [...byKey.values()].sort((a, b) => a.year - b.year);
   } catch {
     return STATIC_REFERENCES;
   }

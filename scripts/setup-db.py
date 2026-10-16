@@ -5,7 +5,10 @@ from pathlib import Path
 import paramiko
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-SCHEMA = (SCRIPT_DIR.parent / "sql" / "schema.sql").read_text(encoding="utf-8")
+SCHEMA = "\n".join(
+    (SCRIPT_DIR.parent / "sql" / name).read_text(encoding="utf-8")
+    for name in ("schema.sql", "002_literature.sql")
+)
 HOSTS = ["192.168.1.%", "192.168.1.32", "localhost"]
 
 

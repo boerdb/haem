@@ -9,7 +9,7 @@ export function SiteFooter() {
   const background = MODULES.filter((m) => BACKGROUND.includes(m.href));
 
   return (
-    <footer className="border-t border-slate-200 bg-white">
+    <footer className="border-t border-slate-200 bg-white print:hidden">
       <div className="mx-auto grid max-w-5xl gap-8 px-4 py-10 text-sm sm:grid-cols-[1.4fr_1fr_1fr] sm:px-6">
         <div>
           <Link href="/" className="flex items-center gap-2 font-semibold text-slate-900">

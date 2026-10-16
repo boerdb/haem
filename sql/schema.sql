@@ -31,7 +31,10 @@ CREATE TABLE IF NOT EXISTS references_lit (
   citation_key VARCHAR(64) NOT NULL UNIQUE,
   authors VARCHAR(512) NOT NULL,
   title VARCHAR(512) NOT NULL,
+  journal VARCHAR(256) NULL,
   year SMALLINT NOT NULL,
+  doi VARCHAR(128) NULL,
+  pmid VARCHAR(16) NULL,
   url VARCHAR(512)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -53,7 +56,4 @@ INSERT IGNORE INTO clinical_scenarios (slug, title_nl, description_nl, pH, pCO2,
    'HCO₃⁻ diffundeert uit de erytrocyt; Cl⁻ diffundeert naar binnen om ladingneutraliteit te handhaven.',
    NULL, NULL, 'Essentieel voor ~70% CO₂-transport als bicarbonaat.');
 
-INSERT IGNORE INTO references_lit (citation_key, authors, title, year, url) VALUES
-  ('west-2020', 'West J.B.', 'Respiratory Physiology — The Essentials', 2020, NULL),
-  ('geers-1994', 'Geers C., Gross G.', 'Carbon dioxide transport and carbonic anhydrase in blood and muscle', 1994, 'https://pubmed.ncbi.nlm.nih.gov/7933611/'),
-  ('dash-2004', 'Dash R.K., Bassingthwaighte J.B.', 'Blood HbO₂ and HbCO₂ dissociation curves at varied O₂, CO₂, pH, 2,3-DPG and temperature', 2004, NULL);
+-- Literatuur: zie sql/002_literature.sql (gegenereerd uit lib/literature.ts)
