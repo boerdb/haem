@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Droplets } from "lucide-react";
+import { Logo } from "@/components/layout/Logo";
 import { MODULES } from "@/lib/modules";
 
 const LINKS = [
@@ -18,7 +18,7 @@ export function SiteNav() {
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur print:hidden">
       <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-3 sm:px-6">
         <div className="flex items-center gap-2">
-          <Droplets className="h-6 w-6 text-red-600" aria-hidden />
+          <Logo size={28} />
           <Link href="/" className="text-lg font-semibold tracking-tight">
             Haemo
           </Link>

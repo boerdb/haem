@@ -1,10 +1,15 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 export const alt = "Haemo — O₂/CO₂ gasuitwisseling & hemoglobine";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpengraphImage() {
+export default async function OpengraphImage() {
+  const png = await readFile(join(process.cwd(), "public/icons/icon-192.png"));
+  const icon = `data:image/png;base64,${png.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -21,12 +26,8 @@ export default function OpengraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <svg width="72" height="72" viewBox="0 0 64 64">
-            <rect width="64" height="64" rx="14" fill="#dc2626" />
-            <path d="M32 10C32 10 16 28 16 39a16 16 0 0 0 32 0C48 28 32 10 32 10Z" fill="#fff" />
-            <circle cx="27" cy="40" r="5" fill="#2563eb" />
-            <circle cx="37" cy="40" r="5" fill="#2563eb" />
-          </svg>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={icon} width={80} height={80} alt="" />
           <div style={{ fontSize: 44, fontWeight: 700 }}>Haemo</div>
         </div>
 

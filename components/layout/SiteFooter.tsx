@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Droplets } from "lucide-react";
+import { Logo } from "@/components/layout/Logo";
 import { MODULES } from "@/lib/modules";
 
 const BACKGROUND = ["/theorie", "/appendix"];
@@ -13,7 +13,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-5xl gap-8 px-4 py-10 text-sm sm:grid-cols-[1.4fr_1fr_1fr] sm:px-6">
         <div>
           <Link href="/" className="flex items-center gap-2 font-semibold text-slate-900">
-            <Droplets className="h-5 w-5 text-red-600" aria-hidden />
+            <Logo size={22} />
             Haemo
           </Link>
           <p className="mt-3 max-w-xs leading-relaxed text-slate-600">
