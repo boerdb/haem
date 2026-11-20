@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack -p 3016",
+    "dev": "node scripts/dev-met-tunnel.mjs dev --webpack -p 3016",
+    "dev:zonder-tunnel": "next dev --webpack -p 3016",
     "build": "next build --webpack",
     "start": "next start -p 3016",
     "lint": "eslint",
