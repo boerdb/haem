@@ -6,13 +6,13 @@
 import { Client } from "ssh2";
 import { sshOptions } from "./ssh.mjs";
 
-const HOST = process.env.DEPLOY_HOST || "192.168.1.32";
+const HOST = process.env.DEPLOY_HOST || "85.10.144.42";
 const USER = process.env.DEPLOY_USER || "root";
 const APP_DIR = "/var/www/haemo";
 const REPO = process.env.DEPLOY_REPO || "https://github.com/boerdb/haem.git";
 const PORT = process.env.APP_PORT || "3016";
 const DATABASE_URL = process.env.DATABASE_URL;
-const REDIS_URL = process.env.REDIS_URL || "redis://192.168.1.14:6379";
+const REDIS_URL = process.env.REDIS_URL || "redis://127.0.0.1:6379";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://haemo.clvs.nl";
 
 if (!DATABASE_URL) {
